@@ -106,6 +106,24 @@ curl -X POST http://localhost:8080/api/v1/quotes \
   }'
 ```
 
+## Container e Kubernetes
+
+Construir e executar a imagem:
+
+```bash
+docker build -t mecanica/billing-service:local .
+docker run -p 8080:8080 \
+  -e MONGODB_URI='mongodb://...' \
+  -e RABBITMQ_HOST='...' \
+  mecanica/billing-service:local
+```
+
+Manifests em `k8s/` (`namespace`, `configmap`, `secret`, `deployment`,
+`service`). O `secret.yaml` contém apenas placeholders — crie o Secret real no
+cluster com `kubectl create secret`, conforme as instruções no próprio arquivo.
+O container roda como usuário não root e expõe probes em
+`/actuator/health/liveness` e `/actuator/health/readiness`.
+
 ## URLs locais
 
 - Swagger UI: <http://localhost:8080/swagger-ui.html>

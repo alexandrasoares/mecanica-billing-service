@@ -161,14 +161,14 @@ uma falha aparece no monitoramento.
 
 **Entrega:** serviço reproduzível e implantável no cluster.
 
-- [ ] Criar Dockerfile multi-stage e executar como usuário não root.
-- [ ] Criar `.dockerignore`.
-- [ ] Criar Deployment e Service.
-- [ ] Configurar ConfigMap e referências a Secret.
-- [ ] Configurar liveness, readiness, recursos e rollout.
+- [x] Criar Dockerfile multi-stage e executar como usuário não root.
+- [x] Criar `.dockerignore`.
+- [x] Criar Deployment e Service.
+- [x] Configurar ConfigMap e referências a Secret.
+- [x] Configurar liveness, readiness, recursos e rollout.
 - [ ] Configurar Ingress somente para endpoints públicos.
 - [ ] Definir persistência ou serviço gerenciado do MongoDB.
-- [ ] Criar Terraform acordado para a infraestrutura.
+- [ ] Criar Terraform acordado para a infraestrutura (se adotado pelo grupo).
 - [ ] Validar manifests em um cluster.
 
 **Aceite:** uma imagem imutável sobe no Kubernetes, passa nas probes e não

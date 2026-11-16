@@ -358,13 +358,13 @@ identificador e falhas relevantes aparecem no monitoramento.
 
 ### Marco 8 - Docker, Kubernetes e infraestrutura
 
-- [ ] Criar Dockerfile multi-stage, imagem pequena e usuário não root.
-- [ ] Criar `.dockerignore`.
-- [ ] Disponibilizar ambiente local reproduzível para aplicação, MongoDB e
+- [x] Criar Dockerfile multi-stage, imagem pequena e usuário não root.
+- [x] Criar `.dockerignore`.
+- [x] Disponibilizar ambiente local reproduzível para aplicação, MongoDB e
       RabbitMQ.
-- [ ] Criar Deployment e Service Kubernetes.
-- [ ] Criar ConfigMap e referências a Secret, sem valores sensíveis no Git.
-- [ ] Configurar probes, requests/limits, estratégia de rollout e réplicas.
+- [x] Criar Deployment e Service Kubernetes.
+- [x] Criar ConfigMap e referências a Secret, sem valores sensíveis no Git.
+- [x] Configurar probes, requests/limits, estratégia de rollout e réplicas.
 - [ ] Criar Ingress apenas para endpoints que precisam ser públicos.
 - [ ] Configurar persistência/serviço gerenciado do MongoDB conforme ambiente.
 - [ ] Criar IaC prometida pelo projeto ou ajustar o README ao escopo acordado.
