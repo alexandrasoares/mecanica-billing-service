@@ -48,7 +48,7 @@ import org.testcontainers.utility.DockerImageName;
         "billing.mercado-pago.reconciliation-enabled=false",
         "billing.messaging.outbox.poll-interval-ms=100"
 })
-@Testcontainers(disabledWithoutDocker = true)
+@Testcontainers
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class BillingFlowIntegrationTest {
 

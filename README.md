@@ -197,6 +197,7 @@ execução do serviço.
 ## Planejamento
 
 - [Entregáveis por etapa](docs/ENTREGAVEIS.md)
+- [CI/CD e governança do pipeline](docs/CI-CD.md)
 - [Análise completa e checklist da Fase 4](docs/FASE4-CHECKLIST.md)
 
 A próxima ação é executar o teste controlado no sandbox com as credenciais da

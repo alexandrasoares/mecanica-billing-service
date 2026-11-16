@@ -178,13 +178,24 @@ contém credenciais.
 
 **Entrega:** pipeline independente, da validação do PR ao deploy.
 
-- [ ] Criar CI de PR com build, testes, cobertura e qualidade.
+Os workflows `Billing CI` e `Billing Release` foram criados
+(`.github/workflows/`), mas ainda não foram executados no GitHub Actions. Os
+itens abaixo só serão marcados após a execução remota e a configuração
+descritas em [docs/CI-CD.md](CI-CD.md).
+
+- [ ] Criar CI de PR com build, testes, cobertura e qualidade
+      (workflow criado; quality gate do Sonar depende de variáveis do
+      repositório ainda não provisionadas).
 - [ ] Adicionar scans de dependências, secrets e imagem.
-- [ ] Publicar imagem versionada em registry.
-- [ ] Automatizar deploy no Kubernetes.
+- [ ] Publicar imagem versionada em registry
+      (job criado; depende de execução do release no GitHub).
+- [ ] Automatizar deploy no Kubernetes
+      (job criado, opt-in via `KUBERNETES_DEPLOY_ENABLED`; depende do
+      ambiente `staging` e do secret `KUBE_CONFIG_BASE64`).
 - [ ] Separar secrets por ambiente.
-- [ ] Configurar rollback ou rollout seguro.
-- [ ] Proteger `main` com PR e checks obrigatórios.
+- [ ] Configurar rollback ou rollout seguro
+      (rollback manual documentado; sem reversão automática).
+- [x] Proteger `main` com PR e checks obrigatórios.
 - [ ] Registrar evidência de execução bem-sucedida.
 
 **Aceite:** código reprovado não entra na principal e código aprovado gera
