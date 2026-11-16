@@ -326,15 +326,17 @@ somente a documentação.
 
 ### Marco 6 - Testes e qualidade
 
-- [ ] Cobrir domínio e casos de uso com testes unitários.
-- [ ] Testar MongoDB e RabbitMQ com integração real isolada, preferencialmente
-      via Testcontainers.
+- [x] Cobrir domínio e casos de uso com testes unitários.
+- [x] Testar MongoDB e RabbitMQ com integração real isolada via Testcontainers.
 - [ ] Testar contratos HTTP e de eventos.
 - [x] Testar adapter Mercado Pago sem chamar produção.
+- [x] Implementar cenário BDD executável do Billing (Cucumber) — ver
+      `docs/bdd/BILLING-BDD.md`.
 - [ ] Participar de pelo menos um fluxo BDD completo entre microsserviços.
 - [ ] Incluir ao menos um BDD de falha/compensação para a demonstração.
-- [ ] Configurar JaCoCo com gate mínimo de 80% por serviço.
-- [ ] Configurar SonarQube/SonarCloud e quality gate no CI.
+- [x] Configurar JaCoCo com gate mínimo de 80% por serviço.
+- [x] Configurar scanner Sonar (`sonar-project.properties` + plugin Maven).
+- [ ] Executar análise Sonar e quality gate no CI.
 - [ ] Guardar link ou imagem da cobertura no README.
 
 Critério de aceite: pipeline falha abaixo de 80% ou com quality gate reprovado,

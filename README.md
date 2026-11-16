@@ -146,9 +146,9 @@ Credenciais reais não devem ser versionadas.
 O comando `./mvnw verify` executa os testes e reprova o build se a cobertura de
 linhas ficar abaixo de 80%. No primeiro incremento:
 
-- 62 testes;
-- 85,95% de cobertura de linhas;
-- 65,14% de cobertura de branches.
+- 65 testes, incluindo integração com Testcontainers (MongoDB + RabbitMQ) e
+  um cenário BDD em Cucumber;
+- 89,61% de cobertura de linhas.
 
 ## Integração e Saga
 

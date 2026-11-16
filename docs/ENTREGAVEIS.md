@@ -126,15 +126,16 @@ verificada no Mercado Pago avança a OS.
 
 - [x] Configurar JaCoCo com gate mínimo de 80%.
 - [x] Criar testes unitários iniciais de domínio, aplicação e API.
-- [x] Manter cobertura acima de 80% (85,95% de linhas).
+- [x] Manter cobertura acima de 80% (89,61% de linhas).
 - [x] Testar Inbox, Outbox, publisher confirms, retry e listeners.
-- [ ] Adicionar testes de integração com MongoDB e RabbitMQ.
+- [x] Adicionar testes de integração com MongoDB e RabbitMQ (Testcontainers).
 - [ ] Testar contratos HTTP e de eventos.
 - [x] Testar o adapter Mercado Pago sem produção.
+- [x] Implementar cenário BDD executável do Billing (Cucumber).
 - [ ] Implementar cenário BDD ponta a ponta com os demais serviços.
 - [ ] Implementar cenário BDD de falha/compensação.
-- [ ] Configurar SonarQube ou SonarCloud.
-- [ ] Publicar evidências de cobertura e quality gate.
+- [x] Configurar scanner Sonar (`sonar-project.properties` + plugin Maven).
+- [ ] Publicar evidências de cobertura e quality gate no CI.
 
 **Aceite:** o pipeline bloqueia cobertura inferior a 80% ou quality gate
 reprovado, e o BDD comprova o fluxo distribuído.
