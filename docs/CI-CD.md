@@ -103,14 +103,19 @@ kubectl -n mecanica rollout undo deployment/billing-service
 ## Estado atual e evidências pendentes
 
 - Workflows de CI e release **criados** neste repositório.
+- [Primeira execução do Billing CI aprovada](https://github.com/alexandrasoares/mecanica-billing-service/actions/runs/43959216320),
+  no commit `1b90fff3090b6fd649df7fa53cbdd248bddc2ad3`: 68 testes sem falhas
+  ou testes ignorados, gate JaCoCo aprovado, cinco manifests válidos e imagem
+  Docker construída. Os relatórios estão no artefato `test-evidence` dessa
+  execução. O job Sonar foi ignorado por falta de configuração.
 - Proteção da branch `main` **configurada**: exige PR com 1 aprovação,
   descarta aprovações obsoletas, exige resolução de conversas, exige branch
   atualizada com os checks `Build and tests`, `Kubernetes manifests` e
   `Container build`, aplica-se a administradores e bloqueia force-push e
   exclusão da branch.
-- Pendente: execução real no GitHub Actions, configuração das variáveis e
-  secrets acima, provisionamento do ambiente `staging` e deploy real
-  validado.
+- Pendente: análise Sonar e quality gate, configuração das variáveis e
+  secrets acima, publicação no GHCR, provisionamento do ambiente `staging`
+  e deploy real validado.
 - Scans de dependências, secrets e imagem ainda **não** foram implementados.
 - A Etapa 10 (CI/CD e proteção de branch) não está concluída enquanto esses
   itens externos não forem verificados.

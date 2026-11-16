@@ -179,12 +179,14 @@ contém credenciais.
 **Entrega:** pipeline independente, da validação do PR ao deploy.
 
 Os workflows `Billing CI` e `Billing Release` foram criados
-(`.github/workflows/`), mas ainda não foram executados no GitHub Actions. Os
-itens abaixo só serão marcados após a execução remota e a configuração
-descritas em [docs/CI-CD.md](CI-CD.md).
+(`.github/workflows/`). O Billing CI passou no GitHub Actions para o commit
+`1b90fff`, com 68 testes, gate JaCoCo, validação de manifests e build da imagem.
+Sonar, publicação e deploy continuam pendentes conforme
+[docs/CI-CD.md](CI-CD.md).
 
+- [x] Executar build, testes e gate de cobertura no GitHub Actions.
 - [ ] Criar CI de PR com build, testes, cobertura e qualidade
-      (workflow criado; quality gate do Sonar depende de variáveis do
+      (build validado por push; quality gate do Sonar depende de variáveis do
       repositório ainda não provisionadas).
 - [ ] Adicionar scans de dependências, secrets e imagem.
 - [ ] Publicar imagem versionada em registry
@@ -196,7 +198,8 @@ descritas em [docs/CI-CD.md](CI-CD.md).
 - [ ] Configurar rollback ou rollout seguro
       (rollback manual documentado; sem reversão automática).
 - [x] Proteger `main` com PR e checks obrigatórios.
-- [ ] Registrar evidência de execução bem-sucedida.
+- [x] Registrar evidência de execução bem-sucedida do CI.
+- [ ] Registrar evidência de publicação, quality gate Sonar e deploy.
 
 **Aceite:** código reprovado não entra na principal e código aprovado gera
 imagem e deploy rastreáveis.
