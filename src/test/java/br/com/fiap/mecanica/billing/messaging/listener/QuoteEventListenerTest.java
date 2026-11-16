@@ -9,6 +9,7 @@ import java.util.UUID;
 import br.com.fiap.mecanica.billing.messaging.contract.EventTypes;
 import br.com.fiap.mecanica.billing.messaging.contract.IntegrationEvent;
 import br.com.fiap.mecanica.billing.messaging.contract.OsEventPayloads;
+import br.com.fiap.mecanica.billing.shared.observability.BillingMetrics;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,13 +29,16 @@ class QuoteEventListenerTest {
     @Mock
     private QuoteSagaHandler handler;
 
+    @Mock
+    private BillingMetrics metrics;
+
     private ObjectMapper objectMapper;
     private QuoteEventListener listener;
 
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        listener = new QuoteEventListener(objectMapper, handler);
+        listener = new QuoteEventListener(objectMapper, handler, metrics);
     }
 
     @Test

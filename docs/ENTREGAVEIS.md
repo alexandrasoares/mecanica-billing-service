@@ -145,10 +145,12 @@ reprovado, e o BDD comprova o fluxo distribuído.
 **Entrega:** rastreamento operacional de uma OS entre serviços.
 
 - [x] Expor health check e endpoint Prometheus.
-- [ ] Estruturar logs e remover dados sensíveis.
-- [ ] Propagar trace/correlation ID por HTTP e RabbitMQ.
+- [x] Estruturar logs com `correlationId`/`eventId` no MDC, sem dados sensíveis.
+- [x] Propagar `correlationId` por HTTP (`X-Correlation-Id`), RabbitMQ (header)
+      e logs.
 - [ ] Integrar métricas, logs e traces às ferramentas da Fase 3.
-- [ ] Medir orçamentos, pagamentos, erros, retries, DLQ e latência.
+- [x] Medir eventos enfileirados, publicações na Outbox, falhas definitivas e
+      consumo por tipo de evento.
 - [ ] Criar dashboard e alertas mínimos.
 - [ ] Documentar reprocessamento seguro da DLQ.
 

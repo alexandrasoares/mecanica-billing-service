@@ -13,6 +13,7 @@ import java.time.ZoneOffset;
 import br.com.fiap.mecanica.billing.messaging.contract.EventContext;
 import br.com.fiap.mecanica.billing.messaging.contract.EventTypes;
 import br.com.fiap.mecanica.billing.messaging.contract.IntegrationEvent;
+import br.com.fiap.mecanica.billing.shared.observability.BillingMetrics;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,9 @@ class OutboxServiceTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private BillingMetrics metrics;
+
     private OutboxService service;
 
     @BeforeEach
@@ -40,7 +44,8 @@ class OutboxServiceTest {
         service = new OutboxService(
                 repository,
                 objectMapper,
-                Clock.fixed(NOW, ZoneOffset.UTC)
+                Clock.fixed(NOW, ZoneOffset.UTC),
+                metrics
         );
     }
 

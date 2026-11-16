@@ -344,11 +344,12 @@ e o BDD prova a integração do Billing no fluxo completo.
 
 ### Marco 7 - Observabilidade e operação
 
-- [ ] Expor liveness, readiness e métricas via Actuator.
+- [x] Expor liveness, readiness e métricas via Actuator.
 - [ ] Integrar métricas à ferramenta usada na Fase 3.
-- [ ] Emitir logs estruturados, sem secrets ou dados financeiros sensíveis.
-- [ ] Propagar trace/correlation ID em HTTP, RabbitMQ e chamadas ao Mercado Pago.
-- [ ] Criar métricas para orçamento, pagamento, falhas, retries, DLQ e latência.
+- [x] Emitir logs com `correlationId`/`eventId`, sem secrets ou dados
+      financeiros sensíveis.
+- [x] Propagar `correlationId` em HTTP, RabbitMQ e chamadas ao Mercado Pago.
+- [x] Criar métricas para eventos, publicações, falhas e consumo.
 - [ ] Criar dashboard e alertas mínimos.
 - [ ] Documentar consulta e reprocessamento seguro da DLQ.
 

@@ -5,8 +5,10 @@ import java.io.IOException;
 import br.com.fiap.mecanica.billing.messaging.contract.EventTypes;
 import br.com.fiap.mecanica.billing.messaging.contract.IntegrationEvent;
 import br.com.fiap.mecanica.billing.messaging.contract.OsEventPayloads;
+import br.com.fiap.mecanica.billing.shared.observability.BillingMetrics;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.MDC;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -24,10 +26,16 @@ public class QuoteEventListener {
 
     private final ObjectMapper objectMapper;
     private final QuoteSagaHandler handler;
+    private final BillingMetrics metrics;
 
-    public QuoteEventListener(ObjectMapper objectMapper, QuoteSagaHandler handler) {
+    public QuoteEventListener(
+            ObjectMapper objectMapper,
+            QuoteSagaHandler handler,
+            BillingMetrics metrics
+    ) {
         this.objectMapper = objectMapper;
         this.handler = handler;
+        this.metrics = metrics;
     }
 
     @RabbitListener(queues = "${billing.messaging.queues.quote-requested}")
@@ -35,7 +43,7 @@ public class QuoteEventListener {
         IntegrationEvent<OsEventPayloads.QuoteRequested> event =
                 read(message, QUOTE_REQUESTED_TYPE);
         validateSourceAndType(event, EventTypes.OS_QUOTE_REQUESTED);
-        handler.handleQuoteRequested(event);
+        withMdc(event, () -> handler.handleQuoteRequested(event));
     }
 
     @RabbitListener(queues = "${billing.messaging.queues.os-cancelled}")
@@ -43,7 +51,26 @@ public class QuoteEventListener {
         IntegrationEvent<OsEventPayloads.Cancelled> event =
                 read(message, OS_CANCELLED_TYPE);
         validateSourceAndType(event, EventTypes.OS_CANCELLED);
-        handler.handleOsCancelled(event);
+        withMdc(event, () -> handler.handleOsCancelled(event));
+    }
+
+    private void withMdc(IntegrationEvent<?> event, Runnable action) {
+        if (event.correlationId() != null) {
+            MDC.put("correlationId", event.correlationId());
+        }
+        if (event.eventId() != null) {
+            MDC.put("eventId", event.eventId().toString());
+        }
+        try {
+            action.run();
+            metrics.messageConsumed(event.eventType(), "processed");
+        } catch (RuntimeException exception) {
+            metrics.messageConsumed(event.eventType(), "failed");
+            throw exception;
+        } finally {
+            MDC.remove("correlationId");
+            MDC.remove("eventId");
+        }
     }
 
     private <T> IntegrationEvent<T> read(

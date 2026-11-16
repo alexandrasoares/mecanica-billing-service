@@ -13,6 +13,9 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 
+import br.com.fiap.mecanica.billing.shared.observability.BillingMetrics;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +37,9 @@ class RabbitOutboxPublisherTest {
     @Mock
     private RabbitTemplate rabbitTemplate;
 
+    @Mock
+    private BillingMetrics metrics;
+
     private RabbitOutboxPublisher publisher;
 
     @BeforeEach
@@ -42,6 +48,8 @@ class RabbitOutboxPublisherTest {
                 repository,
                 rabbitTemplate,
                 Clock.fixed(NOW, ZoneOffset.UTC),
+                new ObjectMapper().registerModule(new JavaTimeModule()),
+                metrics,
                 "mecanica.events",
                 3,
                 1

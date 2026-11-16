@@ -146,9 +146,19 @@ Credenciais reais não devem ser versionadas.
 O comando `./mvnw verify` executa os testes e reprova o build se a cobertura de
 linhas ficar abaixo de 80%. No primeiro incremento:
 
-- 65 testes, incluindo integração com Testcontainers (MongoDB + RabbitMQ) e
+- 68 testes, incluindo integração com Testcontainers (MongoDB + RabbitMQ) e
   um cenário BDD em Cucumber;
-- 89,61% de cobertura de linhas.
+- 89,62% de cobertura de linhas.
+
+## Observabilidade
+
+- Toda resposta HTTP devolve `X-Correlation-Id` e o filtro propaga o valor
+  recebido ou gera um novo.
+- O `correlationId` viaja no header AMQP das mensagens da Outbox e é gravado
+  no MDC dos listeners (`correlationId`, `eventId`).
+- Métricas Micrometer expostas em `/actuator/prometheus`:
+  `billing.events.enqueued`, `billing.outbox.publish`,
+  `billing.outbox.failed` e `billing.messaging.consumed`.
 
 ## Integração e Saga
 
