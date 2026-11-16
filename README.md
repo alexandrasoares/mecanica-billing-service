@@ -14,10 +14,12 @@ já permite:
 - aprovar ou rejeitar o orçamento;
 - persistir no MongoDB;
 - validar estados, valores e duplicidade por OS;
+- consumir solicitações e cancelamentos pelo RabbitMQ de forma idempotente;
+- publicar eventos por Outbox com confirmação do broker;
+- aplicar retry e encaminhar falhas definitivas para DLQ;
 - consultar o contrato OpenAPI e métricas operacionais.
 
-Pagamento, Mercado Pago, mensageria e Saga estão planejados para os próximos
-incrementos.
+Pagamento e Mercado Pago estão planejados para o próximo incremento.
 
 ## Stack
 
@@ -109,11 +111,15 @@ curl -X POST http://localhost:8080/api/v1/quotes \
 | Variável | Valor padrão |
 | --- | --- |
 | `SERVER_PORT` | `8080` |
-| `MONGODB_URI` | `mongodb://localhost:27017/billing` |
+| `MONGODB_URI` | `mongodb://localhost:27017/billing?replicaSet=rs0` |
 | `RABBITMQ_HOST` | `localhost` |
 | `RABBITMQ_PORT` | `5672` |
 | `RABBITMQ_USERNAME` | `guest` |
 | `RABBITMQ_PASSWORD` | `guest` |
+| `RABBITMQ_EXCHANGE` | `mecanica.events` |
+| `RABBITMQ_DLX` | `mecanica.events.dlx` |
+| `OUTBOX_POLL_INTERVAL_MS` | `1000` |
+| `OUTBOX_MAX_ATTEMPTS` | `10` |
 
 Credenciais reais não devem ser versionadas.
 
@@ -122,15 +128,17 @@ Credenciais reais não devem ser versionadas.
 O comando `./mvnw verify` executa os testes e reprova o build se a cobertura de
 linhas ficar abaixo de 80%. No primeiro incremento:
 
-- 18 testes;
-- 96,12% de cobertura de linhas;
-- 82,50% de cobertura de branches.
+- 40 testes;
+- 92,06% de cobertura de linhas;
+- 79,49% de cobertura de branches.
 
 ## Integração e Saga
 
-O Billing participa de uma Saga coreografada por eventos no RabbitMQ. O escopo
-atual cobre a solicitação, criação, envio, aprovação, rejeição e cancelamento de
-orçamentos sem acessar o banco do OS Service.
+O Billing participa de uma Saga coreografada por eventos no RabbitMQ. O fluxo
+implementado cobre a solicitação, criação, envio, aprovação, rejeição e
+cancelamento de orçamentos sem acessar o banco do OS Service. Inbox, Outbox,
+publisher confirms, retry e DLQ garantem processamento pelo menos uma vez com
+efeitos idempotentes.
 
 - [Decisão arquitetural da Saga](docs/architecture/ADR-001-saga-coreografada.md)
 - [Fluxo, topologia e compensações](docs/architecture/SAGA-BILLING.md)
@@ -145,5 +153,5 @@ do fluxo ocorre a cobrança.
 - [Entregáveis por etapa](docs/ENTREGAVEIS.md)
 - [Análise completa e checklist da Fase 4](docs/FASE4-CHECKLIST.md)
 
-A próxima entrega é implementar os contratos assíncronos com idempotência,
-Inbox, Outbox, retry e DLQ.
+A próxima entrega é implementar pagamentos e a integração sandbox com o Mercado
+Pago.

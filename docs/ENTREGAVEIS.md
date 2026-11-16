@@ -9,7 +9,7 @@ Um item só deve ser marcado como concluído depois de validado.
 - [x] ETAPA 2 - Fundação Spring Boot, MongoDB, RabbitMQ e ambiente local.
 - [x] ETAPA 3 - MVP de orçamento com API, persistência e testes.
 - [x] ETAPA 4 - Contratos de integração e participação do Billing na Saga.
-- [ ] ETAPA 5 - Mensageria confiável com idempotência, retry e DLQ.
+- [x] ETAPA 5 - Mensageria confiável com idempotência, retry e DLQ.
 - [ ] ETAPA 6 - Pagamentos e integração sandbox com Mercado Pago.
 - [ ] ETAPA 7 - Testes, cobertura de 80%, qualidade e participação no BDD.
 - [ ] ETAPA 8 - Observabilidade do Billing Service.
@@ -17,7 +17,7 @@ Um item só deve ser marcado como concluído depois de validado.
 - [ ] ETAPA 10 - CI/CD e proteção da branch do repositório Billing.
 - [ ] ETAPA 11 - Swagger, arquitetura e evidências do Billing Service.
 
-Progresso: **4 de 11 etapas concluídas (36%)**.
+Progresso: **5 de 11 etapas concluídas (45%)**.
 
 Legenda:
 
@@ -86,16 +86,16 @@ persistidas.
 - [x] Versionar envelope e payloads dos eventos.
 - [x] Documentar Saga, sequência, topologia e limites do Billing.
 - [x] Definir routing keys, filas, DLQ e regras de compatibilidade.
-- [ ] Configurar exchange, filas e routing keys.
-- [ ] Consumir abertura/cancelamento da OS de forma idempotente.
-- [ ] Publicar eventos de orçamento criado, enviado, aprovado e rejeitado.
-- [ ] Implementar Inbox para deduplicação.
-- [ ] Implementar Outbox para publicação confiável.
-- [ ] Configurar retry com backoff e DLQ.
-- [ ] Propagar `eventId`, `correlationId` e `causationId`.
+- [x] Configurar exchange, filas e routing keys.
+- [x] Consumir solicitação/cancelamento da OS de forma idempotente.
+- [x] Publicar eventos de orçamento criado, enviado, aprovado e rejeitado.
+- [x] Implementar Inbox para deduplicação.
+- [x] Implementar Outbox para publicação confiável.
+- [x] Configurar retry com backoff e DLQ.
+- [x] Propagar `eventId`, `correlationId` e `causationId`.
 - [x] Documentar falhas e compensações do orçamento.
-- [ ] Implementar falhas e compensações no código.
-- [ ] Testar duplicidade, indisponibilidade e reprocessamento.
+- [x] Implementar cancelamento como compensação do orçamento.
+- [x] Testar duplicidade, indisponibilidade, retry e DLQ.
 
 **Aceite:** mensagens repetidas não duplicam efeitos e eventos persistidos não
 são perdidos quando o broker fica indisponível.
@@ -126,7 +126,8 @@ verificada no Mercado Pago avança a OS.
 
 - [x] Configurar JaCoCo com gate mínimo de 80%.
 - [x] Criar testes unitários iniciais de domínio, aplicação e API.
-- [x] Validar cobertura inicial acima de 80% (96,12% de linhas).
+- [x] Manter cobertura acima de 80% (92,06% de linhas).
+- [x] Testar Inbox, Outbox, publisher confirms, retry e listeners.
 - [ ] Adicionar testes de integração com MongoDB e RabbitMQ.
 - [ ] Testar contratos HTTP e de eventos.
 - [ ] Testar o adapter Mercado Pago sem produção.

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,11 +35,18 @@ class QuoteServiceTest {
     @Mock
     private QuoteRepository repository;
 
+    @Mock
+    private QuoteEventPublisher eventPublisher;
+
     private QuoteService service;
 
     @BeforeEach
     void setUp() {
-        service = new QuoteService(repository, Clock.fixed(NOW, ZoneOffset.UTC));
+        service = new QuoteService(
+                repository,
+                Clock.fixed(NOW, ZoneOffset.UTC),
+                eventPublisher
+        );
     }
 
     @Test
@@ -52,6 +60,10 @@ class QuoteServiceTest {
         assertThat(result.getStatus()).isEqualTo(QuoteStatus.DRAFT);
         assertThat(result.getTotal()).isEqualByComparingTo("50.00");
         verify(repository).save(result);
+        verify(eventPublisher).quoteCreated(
+                org.mockito.ArgumentMatchers.eq(result),
+                any()
+        );
     }
 
     @Test
@@ -102,7 +114,15 @@ class QuoteServiceTest {
 
         assertThat(service.submit("QUOTE-1").getStatus()).isEqualTo(QuoteStatus.PENDING_APPROVAL);
         assertThat(service.approve("QUOTE-1").getStatus()).isEqualTo(QuoteStatus.APPROVED);
-        verify(repository, org.mockito.Mockito.times(2)).save(quote);
+        verify(repository, times(2)).save(quote);
+        verify(eventPublisher).quoteSubmitted(
+                org.mockito.ArgumentMatchers.eq(quote),
+                any()
+        );
+        verify(eventPublisher).quoteApproved(
+                org.mockito.ArgumentMatchers.eq(quote),
+                any()
+        );
 
         Quote rejected = quote();
         rejected.submit(NOW);
@@ -110,6 +130,41 @@ class QuoteServiceTest {
         when(repository.save(rejected)).thenReturn(rejected);
 
         assertThat(service.reject("QUOTE-2", "No").getStatus()).isEqualTo(QuoteStatus.REJECTED);
+        verify(eventPublisher).quoteRejected(
+                org.mockito.ArgumentMatchers.eq(rejected),
+                any()
+        );
+    }
+
+    @Test
+    void shouldCancelOpenQuoteAndAvoidDuplicateEffects() {
+        Quote quote = quote();
+        when(repository.findByOsId("OS-1")).thenReturn(Optional.of(quote));
+        when(repository.save(quote)).thenReturn(quote);
+
+        assertThat(service.cancelByOsId("OS-1", "OS cancelled", context()).getStatus())
+                .isEqualTo(QuoteStatus.CANCELLED);
+        assertThat(service.cancelByOsId("OS-1", "duplicate", context()).getStatus())
+                .isEqualTo(QuoteStatus.CANCELLED);
+
+        verify(repository).save(quote);
+        verify(eventPublisher).quoteCancelled(
+                org.mockito.ArgumentMatchers.eq(quote),
+                any()
+        );
+    }
+
+    @Test
+    void shouldNotPublishDuplicateTransitionEvents() {
+        Quote quote = quote();
+        quote.submit(NOW.minusSeconds(1));
+        when(repository.findById("QUOTE-1")).thenReturn(Optional.of(quote));
+
+        assertThat(service.submit("QUOTE-1").getStatus())
+                .isEqualTo(QuoteStatus.PENDING_APPROVAL);
+
+        verify(repository, never()).save(quote);
+        verify(eventPublisher, never()).quoteSubmitted(any(), any());
     }
 
     private CreateQuoteCommand command() {
@@ -141,5 +196,9 @@ class QuoteServiceTest {
                 NOW.plusSeconds(3600),
                 NOW.minusSeconds(60)
         );
+    }
+
+    private br.com.fiap.mecanica.billing.messaging.contract.EventContext context() {
+        return br.com.fiap.mecanica.billing.messaging.contract.EventContext.started("OS-1");
     }
 }

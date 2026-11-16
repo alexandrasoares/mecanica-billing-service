@@ -65,6 +65,28 @@ class QuoteTest {
     }
 
     @Test
+    void shouldCancelOpenQuoteIdempotently() {
+        Quote quote = createQuote();
+
+        assertThat(quote.cancel("OS cancelled", NOW.plusSeconds(10))).isTrue();
+        assertThat(quote.cancel("duplicate", NOW.plusSeconds(20))).isFalse();
+
+        assertThat(quote.getStatus()).isEqualTo(QuoteStatus.CANCELLED);
+        assertThat(quote.getRejectionReason()).isEqualTo("OS cancelled");
+        assertThat(quote.getDecidedAt()).isEqualTo(NOW.plusSeconds(10));
+    }
+
+    @Test
+    void shouldRejectCancellationOfClosedQuote() {
+        Quote quote = createQuote();
+        quote.submit(NOW.plusSeconds(1));
+        quote.approve(NOW.plusSeconds(2));
+
+        assertThatThrownBy(() -> quote.cancel("OS cancelled", NOW.plusSeconds(3)))
+                .isInstanceOf(InvalidQuoteStateException.class);
+    }
+
+    @Test
     void shouldRejectInvalidTransitionsAndExpiredQuote() {
         Quote draft = createQuote();
         assertThatThrownBy(() -> draft.approve(NOW.plusSeconds(1)))

@@ -110,9 +110,9 @@ public class Quote {
         );
     }
 
-    public void submit(Instant now) {
+    public boolean submit(Instant now) {
         if (status == QuoteStatus.PENDING_APPROVAL) {
-            return;
+            return false;
         }
         ensureStatus(QuoteStatus.DRAFT, "Only a draft quote can be submitted");
         Instant transitionTime = Objects.requireNonNull(now, "Transition time is required");
@@ -120,11 +120,12 @@ public class Quote {
         status = QuoteStatus.PENDING_APPROVAL;
         submittedAt = transitionTime;
         updatedAt = transitionTime;
+        return true;
     }
 
-    public void approve(Instant now) {
+    public boolean approve(Instant now) {
         if (status == QuoteStatus.APPROVED) {
-            return;
+            return false;
         }
         ensureStatus(QuoteStatus.PENDING_APPROVAL, "Only a pending quote can be approved");
         Instant transitionTime = Objects.requireNonNull(now, "Transition time is required");
@@ -132,11 +133,12 @@ public class Quote {
         status = QuoteStatus.APPROVED;
         decidedAt = transitionTime;
         updatedAt = transitionTime;
+        return true;
     }
 
-    public void reject(String reason, Instant now) {
+    public boolean reject(String reason, Instant now) {
         if (status == QuoteStatus.REJECTED) {
-            return;
+            return false;
         }
         ensureStatus(QuoteStatus.PENDING_APPROVAL, "Only a pending quote can be rejected");
         rejectionReason = requireText(reason, "Rejection reason is required");
@@ -144,6 +146,22 @@ public class Quote {
         status = QuoteStatus.REJECTED;
         decidedAt = transitionTime;
         updatedAt = transitionTime;
+        return true;
+    }
+
+    public boolean cancel(String reason, Instant now) {
+        if (status == QuoteStatus.CANCELLED) {
+            return false;
+        }
+        if (status != QuoteStatus.DRAFT && status != QuoteStatus.PENDING_APPROVAL) {
+            throw new InvalidQuoteStateException("Only an open quote can be cancelled");
+        }
+        rejectionReason = requireText(reason, "Cancellation reason is required");
+        Instant transitionTime = Objects.requireNonNull(now, "Transition time is required");
+        status = QuoteStatus.CANCELLED;
+        decidedAt = transitionTime;
+        updatedAt = transitionTime;
+        return true;
     }
 
     private void ensureNotExpired(Instant now) {

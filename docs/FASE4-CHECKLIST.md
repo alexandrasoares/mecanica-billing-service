@@ -287,13 +287,13 @@ inválidas.
 
 ### Marco 3 - Mensageria e Saga
 
-- [ ] Criar exchanges, filas, bindings e routing keys.
-- [ ] Implementar consumidores idempotentes.
-- [ ] Implementar publicadores com outbox.
-- [ ] Configurar retry, backoff e DLQ.
-- [ ] Propagar `correlationId`, `eventId` e `causationId`.
-- [ ] Implementar eventos de sucesso, falha e compensação definidos pelo grupo.
-- [ ] Testar duplicidade, indisponibilidade e reprocessamento.
+- [x] Criar exchanges, filas, bindings e routing keys.
+- [x] Implementar consumidores idempotentes.
+- [x] Implementar publicadores com outbox e confirmação do broker.
+- [x] Configurar retry, backoff e DLQ.
+- [x] Propagar `correlationId`, `eventId` e `causationId`.
+- [x] Implementar eventos de sucesso e cancelamento compensatório.
+- [x] Testar duplicidade, indisponibilidade, retry e DLQ.
 
 Critério de aceite: nenhum evento confirmado é perdido e mensagens duplicadas
 não duplicam efeitos.

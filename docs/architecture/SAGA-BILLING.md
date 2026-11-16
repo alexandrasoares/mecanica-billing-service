@@ -36,8 +36,9 @@ sequenceDiagram
     end
 ```
 
-Inbox e Outbox aparecem no diagrama como garantias do fluxo, mas serão
-implementados na etapa seguinte.
+Inbox e Outbox são persistidos no mesmo banco MongoDB do Billing. As mudanças
+de domínio, o registro da Inbox e a gravação da Outbox participam da mesma
+transação local; por isso o MongoDB é executado como replica set.
 
 ## Contratos
 
@@ -92,6 +93,15 @@ A fonte oficial dos contratos é:
 | DLQs | `<queue>.dlq` |
 
 Os valores serão externalizados para permitir nomes diferentes por ambiente.
+
+### Garantias implementadas
+
+- a Inbox usa `eventId` como chave única e ignora entregas repetidas;
+- domínio, Inbox e Outbox são confirmados na mesma transação MongoDB;
+- o publisher da Outbox aguarda a confirmação do RabbitMQ;
+- falhas de publicação usam backoff e permanecem pendentes até o limite;
+- listeners fazem quatro tentativas antes de encaminhar a mensagem para a DLQ;
+- duplicidade após timeout é permitida, e os consumidores devem ser idempotentes.
 
 ## Regras de compatibilidade
 

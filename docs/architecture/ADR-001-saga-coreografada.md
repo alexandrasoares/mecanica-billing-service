@@ -25,8 +25,8 @@ O Billing participará de uma Saga coreografada por eventos no RabbitMQ.
 - O Billing consome `os.cancelled.v1` para compensar o orçamento local quando a
   transição ainda for permitida.
 - Eventos são imutáveis, versionados e processados pelo menos uma vez.
-- Idempotência, Inbox, Outbox, retry e DLQ serão implementados na etapa de
-  mensageria.
+- Idempotência, Inbox, Outbox, publisher confirms, retry e DLQ protegem a
+  entrega pelo menos uma vez.
 
 Não haverá um orquestrador dentro do Billing. Se o grupo escolher posteriormente
 um orquestrador global, ele deverá utilizar contratos explícitos sem acessar o
