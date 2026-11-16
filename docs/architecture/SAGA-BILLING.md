@@ -1,0 +1,132 @@
+# Participação do Billing na Saga
+
+## Escopo
+
+O Billing é dono apenas dos estados de orçamento e pagamento. O OS Service é
+dono da ordem de serviço e decide suas próprias transições ao consumir os fatos
+publicados pelo Billing.
+
+```mermaid
+sequenceDiagram
+    participant OS as OS Service
+    participant MQ as RabbitMQ
+    participant Billing as Billing Service
+    participant Client as Cliente/Canal de aprovação
+
+    OS->>MQ: os.quote.requested.v1
+    MQ->>Billing: solicitação de orçamento
+    Billing->>Billing: cria DRAFT e registra Outbox
+    Billing->>MQ: billing.quote.created.v1
+    Billing->>Billing: envia para aprovação
+    Billing->>MQ: billing.quote.submitted.v1
+    MQ->>OS: orçamento aguardando decisão
+
+    alt orçamento aprovado
+        Client->>Billing: POST /quotes/{id}/approve
+        Billing->>MQ: billing.quote.approved.v1
+        MQ->>OS: aprovação confirmada
+    else orçamento rejeitado
+        Client->>Billing: POST /quotes/{id}/reject
+        Billing->>MQ: billing.quote.rejected.v1
+        MQ->>OS: rejeição confirmada
+    else OS cancelada
+        OS->>MQ: os.cancelled.v1
+        MQ->>Billing: cancelamento da OS
+        Billing->>MQ: billing.quote.cancelled.v1
+    end
+```
+
+Inbox e Outbox aparecem no diagrama como garantias do fluxo, mas serão
+implementados na etapa seguinte.
+
+## Contratos
+
+A fonte oficial dos contratos é:
+
+- [AsyncAPI](../contracts/asyncapi.yaml);
+- [exemplos JSON](../contracts/examples/).
+
+### Envelope obrigatório
+
+| Campo | Regra |
+| --- | --- |
+| `eventId` | UUID único do evento |
+| `eventType` | Nome versionado usado como routing key |
+| `eventVersion` | Versão numérica do payload |
+| `occurredAt` | Data UTC em ISO-8601 |
+| `source` | Serviço que produziu o evento |
+| `correlationId` | Identificador comum a toda a Saga |
+| `causationId` | `eventId` que originou o evento, quando existir |
+| `osId` | Identificador da ordem de serviço |
+| `payload` | Dados específicos do evento |
+
+### Eventos consumidos
+
+| Evento | Produtor | Uso no Billing |
+| --- | --- | --- |
+| `os.quote.requested.v1` | OS Service | criar e enviar orçamento |
+| `os.cancelled.v1` | OS Service | cancelar localmente quando permitido |
+
+### Eventos publicados
+
+| Evento | Significado |
+| --- | --- |
+| `billing.quote.created.v1` | orçamento persistido como rascunho |
+| `billing.quote.submitted.v1` | orçamento enviado para aprovação |
+| `billing.quote.approved.v1` | orçamento aprovado |
+| `billing.quote.rejected.v1` | orçamento rejeitado |
+| `billing.quote.cancelled.v1` | orçamento cancelado por cancelamento da OS |
+| `billing.quote.failed.v1` | solicitação não processada definitivamente |
+
+## Topologia RabbitMQ acordada pelo Billing
+
+| Recurso | Nome |
+| --- | --- |
+| Exchange de domínio | `mecanica.events` |
+| Tipo | `topic`, durável |
+| Queue de solicitação | `billing.os.quote-requested.v1` |
+| Binding | `os.quote.requested.v1` |
+| Queue de cancelamento | `billing.os.cancelled.v1` |
+| Binding | `os.cancelled.v1` |
+| Dead-letter exchange | `mecanica.events.dlx` |
+| DLQs | `<queue>.dlq` |
+
+Os valores serão externalizados para permitir nomes diferentes por ambiente.
+
+## Regras de compatibilidade
+
+- O nome do evento sempre contém a versão principal.
+- Uma mudança que remove, renomeia ou altera o significado de um campo cria
+  outro evento, por exemplo `billing.quote.approved.v2`.
+- Campos novos e opcionais podem ser adicionados mantendo a mesma versão.
+- Consumidores ignoram campos desconhecidos.
+- Valores monetários usam decimal e moeda ISO 4217.
+- Datas usam UTC e ISO-8601.
+- O produtor nunca reutiliza um `eventId`.
+
+## Falhas e compensações
+
+| Situação | Ação do Billing | Resultado publicado |
+| --- | --- | --- |
+| Evento duplicado | Inbox reconhece e não repete efeito | nenhum novo efeito |
+| Dados inválidos | rejeita após política definida | `billing.quote.failed.v1` |
+| Orçamento rejeitado | registra decisão de negócio | `billing.quote.rejected.v1` |
+| OS cancelada | cancela se o estado permitir | `billing.quote.cancelled.v1` |
+| MongoDB indisponível | retry; sem ack da mensagem | evento volta para retry/DLQ |
+| RabbitMQ indisponível após persistência | Outbox mantém evento pendente | publicação posterior |
+| Retry esgotado | envia mensagem original para DLQ | alerta operacional |
+| Evento fora de ordem | não executa transição inválida | retry ou DLQ conforme causa |
+
+Rejeição não é falha técnica. Cancelamento e, futuramente, reembolso são
+compensações explícitas; registros financeiros não devem ser apagados.
+
+## Decisões ainda externas ao Billing
+
+- momento da cobrança no fluxo global;
+- estados internos da OS após cada evento;
+- serviço que fornece peças, mão de obra e preços;
+- política global após rejeição ou expiração;
+- cenário BDD final do grupo.
+
+Essas decisões não impedem a implementação da mensageria de orçamento, mas
+impedem fechar os contratos de pagamento.

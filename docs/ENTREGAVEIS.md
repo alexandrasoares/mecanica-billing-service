@@ -3,6 +3,22 @@
 Este roteiro divide a entrega do Billing Service em incrementos demonstráveis.
 Um item só deve ser marcado como concluído depois de validado.
 
+## Progresso executivo
+
+- [x] ETAPA 1 - Análise e planejamento exclusivo do Billing Service.
+- [x] ETAPA 2 - Fundação Spring Boot, MongoDB, RabbitMQ e ambiente local.
+- [x] ETAPA 3 - MVP de orçamento com API, persistência e testes.
+- [x] ETAPA 4 - Contratos de integração e participação do Billing na Saga.
+- [ ] ETAPA 5 - Mensageria confiável com idempotência, retry e DLQ.
+- [ ] ETAPA 6 - Pagamentos e integração sandbox com Mercado Pago.
+- [ ] ETAPA 7 - Testes, cobertura de 80%, qualidade e participação no BDD.
+- [ ] ETAPA 8 - Observabilidade do Billing Service.
+- [ ] ETAPA 9 - Dockerfile e manifests Kubernetes do Billing Service.
+- [ ] ETAPA 10 - CI/CD e proteção da branch do repositório Billing.
+- [ ] ETAPA 11 - Swagger, arquitetura e evidências do Billing Service.
+
+Progresso: **4 de 11 etapas concluídas (36%)**.
+
 Legenda:
 
 - `[x]` concluído;
@@ -10,7 +26,7 @@ Legenda:
 - itens não decididos pelo grupo permanecem pendentes mesmo que exista uma
   recomendação técnica.
 
-## Etapa 0 - Escopo e contratos
+## Marco 0 - Escopo e contratos
 
 **Entrega:** fronteiras do serviço e contratos acordados entre os integrantes.
 
@@ -18,16 +34,16 @@ Legenda:
 - [x] Delimitar responsabilidades do Billing Service.
 - [x] Mapear riscos, dependências e critérios de aceite.
 - [ ] Confirmar MongoDB no Billing e banco SQL em outro serviço.
-- [ ] Confirmar Saga coreografada ou definir o orquestrador.
+- [x] Adotar Saga coreografada no escopo do Billing.
 - [ ] Definir em qual momento do fluxo ocorre o pagamento.
 - [ ] Definir estados oficiais da OS e eventos entre serviços.
 - [ ] Definir a origem dos itens e preços do orçamento.
-- [ ] Aprovar exemplos JSON dos contratos assíncronos.
+- [x] Publicar contrato AsyncAPI e exemplos JSON para revisão do grupo.
 
 **Aceite:** OS, Billing e execução conseguem evoluir sem banco ou modelo
 interno compartilhado.
 
-## Etapa 1 - Fundação executável
+## Marco 1 - Fundação executável
 
 **Entrega:** aplicação Spring Boot compilável, configuração externa e ambiente
 local de dependências.
@@ -44,7 +60,7 @@ local de dependências.
 **Aceite:** o projeto compila, os testes passam e o health check responde com
 as dependências disponíveis.
 
-## Etapa 2 - MVP de orçamento
+## Marco 2 - MVP de orçamento
 
 **Entrega:** primeiro fluxo funcional do Billing, do rascunho à decisão.
 
@@ -63,11 +79,13 @@ as dependências disponíveis.
 **Aceite:** uma OS possui orçamento consistente e apenas transições válidas são
 persistidas.
 
-## Etapa 3 - Mensageria e participação na Saga
+## Marco 3 - Mensageria e participação na Saga
 
 **Entrega:** integração assíncrona confiável com o OS Service.
 
-- [ ] Versionar envelope e payloads dos eventos.
+- [x] Versionar envelope e payloads dos eventos.
+- [x] Documentar Saga, sequência, topologia e limites do Billing.
+- [x] Definir routing keys, filas, DLQ e regras de compatibilidade.
 - [ ] Configurar exchange, filas e routing keys.
 - [ ] Consumir abertura/cancelamento da OS de forma idempotente.
 - [ ] Publicar eventos de orçamento criado, enviado, aprovado e rejeitado.
@@ -75,13 +93,14 @@ persistidas.
 - [ ] Implementar Outbox para publicação confiável.
 - [ ] Configurar retry com backoff e DLQ.
 - [ ] Propagar `eventId`, `correlationId` e `causationId`.
-- [ ] Implementar falhas e compensações aprovadas pelo grupo.
+- [x] Documentar falhas e compensações do orçamento.
+- [ ] Implementar falhas e compensações no código.
 - [ ] Testar duplicidade, indisponibilidade e reprocessamento.
 
 **Aceite:** mensagens repetidas não duplicam efeitos e eventos persistidos não
 são perdidos quando o broker fica indisponível.
 
-## Etapa 4 - Pagamento e Mercado Pago
+## Marco 4 - Pagamento e Mercado Pago
 
 **Entrega:** cobrança sandbox segura e confirmação assíncrona.
 
@@ -101,7 +120,7 @@ são perdidos quando o broker fica indisponível.
 **Aceite:** uma cobrança é criada uma única vez e somente a confirmação
 verificada no Mercado Pago avança a OS.
 
-## Etapa 5 - Testes, cobertura e BDD
+## Marco 5 - Testes, cobertura e BDD
 
 **Entrega:** qualidade automatizada e evidência de cobertura.
 
@@ -119,7 +138,7 @@ verificada no Mercado Pago avança a OS.
 **Aceite:** o pipeline bloqueia cobertura inferior a 80% ou quality gate
 reprovado, e o BDD comprova o fluxo distribuído.
 
-## Etapa 6 - Observabilidade
+## Marco 6 - Observabilidade
 
 **Entrega:** rastreamento operacional de uma OS entre serviços.
 
@@ -134,7 +153,7 @@ reprovado, e o BDD comprova o fluxo distribuído.
 **Aceite:** uma OS é localizada de ponta a ponta por um mesmo identificador e
 uma falha aparece no monitoramento.
 
-## Etapa 7 - Container, Kubernetes e infraestrutura
+## Marco 7 - Container, Kubernetes e infraestrutura
 
 **Entrega:** serviço reproduzível e implantável no cluster.
 
@@ -151,7 +170,7 @@ uma falha aparece no monitoramento.
 **Aceite:** uma imagem imutável sobe no Kubernetes, passa nas probes e não
 contém credenciais.
 
-## Etapa 8 - CI/CD e governança
+## Marco 8 - CI/CD e governança
 
 **Entrega:** pipeline independente, da validação do PR ao deploy.
 
@@ -167,13 +186,13 @@ contém credenciais.
 **Aceite:** código reprovado não entra na principal e código aprovado gera
 imagem e deploy rastreáveis.
 
-## Etapa 9 - Documentação e demonstração
+## Marco 9 - Documentação e demonstração
 
 **Entrega:** repositório auditável e material para a entrega do grupo.
 
 - [ ] Atualizar README com arquitetura, execução e variáveis.
-- [ ] Documentar e justificar a estratégia Saga.
-- [ ] Publicar diagramas de contexto, componentes e sequência.
+- [x] Documentar e justificar a estratégia Saga do Billing.
+- [x] Publicar o diagrama de sequência do trecho de orçamento.
 - [ ] Manter Swagger ou Postman atualizado.
 - [ ] Reunir evidências de cobertura, qualidade, deploy e observabilidade.
 - [ ] Entregar ao grupo os dados do Billing para o PDF final.

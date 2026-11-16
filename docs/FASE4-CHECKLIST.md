@@ -161,13 +161,13 @@ Adicionar:
 
 ### Fluxo de orçamento
 
-1. Billing recebe `os.opened` ou uma requisição interna equivalente.
+1. Billing recebe `os.quote.requested.v1` ou uma requisição interna equivalente.
 2. Valida o contrato e deduplica a mensagem.
 3. Gera e persiste o orçamento.
 4. Marca o orçamento como pendente de aprovação.
-5. Publica `billing.quote.created` e `billing.quote.sent`.
+5. Publica `billing.quote.created.v1` e `billing.quote.submitted.v1`.
 6. Cliente aprova ou rejeita por uma operação idempotente.
-7. Billing publica `billing.quote.approved` ou `billing.quote.rejected`.
+7. Billing publica `billing.quote.approved.v1` ou `billing.quote.rejected.v1`.
 8. OS Service atualiza a OS sem acesso cruzado a banco.
 
 ### Fluxo de pagamento
@@ -224,19 +224,18 @@ correlation ID e idempotência nas operações de comando.
 
 ### Eventos
 
-Consumidos, conforme fluxo do grupo:
+Consumidos no trecho de orçamento proposto:
 
-- `os.opened.v1`;
+- `os.quote.requested.v1`;
 - `os.cancelled.v1`;
-- `execution.completed.v1`;
-- eventos de compensação comandados pelo orquestrador, caso essa seja a opção.
 
 Publicados:
 
 - `billing.quote.created.v1`;
-- `billing.quote.sent.v1`;
+- `billing.quote.submitted.v1`;
 - `billing.quote.approved.v1`;
 - `billing.quote.rejected.v1`;
+- `billing.quote.cancelled.v1`;
 - `billing.quote.failed.v1`;
 - `billing.payment.pending.v1`;
 - `billing.payment.approved.v1`;
@@ -254,9 +253,9 @@ Envelope mínimo:
 ### Marco 0 - Contratos do grupo
 
 - [ ] Fechar as decisões da seção 3.
-- [ ] Desenhar o diagrama geral e a sequência da Saga.
-- [ ] Publicar exemplos JSON dos eventos.
-- [ ] Definir timeouts, retries, compensações e estados finais.
+- [x] Desenhar a sequência do Billing na Saga.
+- [x] Publicar AsyncAPI e exemplos JSON dos eventos de orçamento.
+- [x] Definir retries, compensações e estados finais do trecho de orçamento.
 - [ ] Definir o cenário BDD ponta a ponta e um cenário de falha.
 
 Critério de aceite: os serviços concordam sobre estados, eventos e IDs sem

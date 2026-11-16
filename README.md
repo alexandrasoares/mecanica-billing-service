@@ -126,10 +126,24 @@ linhas ficar abaixo de 80%. No primeiro incremento:
 - 96,12% de cobertura de linhas;
 - 82,50% de cobertura de branches.
 
+## Integração e Saga
+
+O Billing participa de uma Saga coreografada por eventos no RabbitMQ. O escopo
+atual cobre a solicitação, criação, envio, aprovação, rejeição e cancelamento de
+orçamentos sem acessar o banco do OS Service.
+
+- [Decisão arquitetural da Saga](docs/architecture/ADR-001-saga-coreografada.md)
+- [Fluxo, topologia e compensações](docs/architecture/SAGA-BILLING.md)
+- [Contrato AsyncAPI](docs/contracts/asyncapi.yaml)
+- [Exemplos de eventos](docs/contracts/examples)
+
+O contrato de pagamento será fechado somente após o grupo definir em qual etapa
+do fluxo ocorre a cobrança.
+
 ## Planejamento
 
 - [Entregáveis por etapa](docs/ENTREGAVEIS.md)
 - [Análise completa e checklist da Fase 4](docs/FASE4-CHECKLIST.md)
 
-A próxima entrega é a integração assíncrona com o OS Service, incluindo
-contratos de eventos, idempotência, Outbox, retry e DLQ.
+A próxima entrega é implementar os contratos assíncronos com idempotência,
+Inbox, Outbox, retry e DLQ.
