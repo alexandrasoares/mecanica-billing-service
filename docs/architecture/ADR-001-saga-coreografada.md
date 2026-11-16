@@ -34,13 +34,13 @@ banco do Billing.
 
 ## Limites da decisão
 
-Esta decisão cobre somente o trecho de orçamento da Saga:
+Esta decisão cobre os trechos de orçamento e pagamento da Saga:
 
-`solicitação -> criação -> envio -> aprovação/rejeição/cancelamento`
+`solicitação -> criação -> aprovação/rejeição -> pagamento -> execução`
 
-O gatilho do pagamento ainda depende da decisão do grupo sobre quando a cobrança
-ocorre. Por isso, eventos de pagamento e execução não fazem parte da versão
-inicial do contrato assíncrono.
+O link de pagamento é criado após a aprovação do orçamento e antes da execução.
+O Billing publica o resultado financeiro; o OS Service continua responsável por
+decidir a transição da ordem de serviço.
 
 ## Consequências
 

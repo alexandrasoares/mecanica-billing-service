@@ -56,8 +56,7 @@ antes da implementação das integrações:
       banco SQL, atendendo ao requisito global de SQL + NoSQL.
 - [ ] Escolher uma única estratégia de Saga para o fluxo do grupo.
 - [ ] Definir quem coordena o fluxo global e qual serviço é dono de cada estado.
-- [ ] Definir quando o pagamento ocorre: antes da execução, depois da execução
-      ou dividido em sinal e saldo.
+- [x] Definir o pagamento após a aprovação do orçamento e antes da execução.
 - [ ] Definir quem fornece itens, peças, mão de obra, quantidades e preços para
       a geração do orçamento.
 - [ ] Definir como o cliente recebe e aprova o orçamento: API, aplicação do
@@ -301,13 +300,14 @@ não duplicam efeitos.
 ### Marco 4 - Mercado Pago
 
 - [ ] Criar conta/aplicação de teste e usar credenciais de sandbox.
-- [ ] Implementar adapter isolado para a API do Mercado Pago.
-- [ ] Criar cobrança/preferência com chave de idempotência.
-- [ ] Implementar webhook público, validação de assinatura e consulta ao provedor.
-- [ ] Mapear status externo para estados internos.
-- [ ] Implementar consulta e reconciliação de pagamentos pendentes.
+- [x] Implementar adapter isolado para a API do Mercado Pago.
+- [x] Criar cobrança/preferência com chave de idempotência.
+- [x] Implementar webhook, validação de assinatura e consulta ao provedor.
+- [x] Mapear status externo para estados internos.
+- [x] Implementar consulta e reconciliação de pagamentos pendentes.
 - [ ] Implementar refund somente se fizer parte da compensação aprovada.
-- [ ] Testar com mocks e executar teste controlado no sandbox.
+- [x] Testar adapter e fluxo completo com provedor HTTP controlado.
+- [ ] Executar teste controlado no sandbox.
 
 Critério de aceite: uma notificação válida confirma uma única vez o pagamento e
 gera o evento esperado; notificações falsas ou repetidas não alteram o estado.
@@ -317,7 +317,7 @@ gera o evento esperado; notificações falsas ou repetidas não alteram o estado
 - [ ] Documentar endpoints, schemas, erros e autenticação no OpenAPI.
 - [ ] Manter Swagger UI acessível no ambiente apropriado.
 - [ ] Exportar coleção Postman se o grupo a utilizar.
-- [ ] Criar exemplos de requests, webhooks e eventos.
+- [x] Criar exemplos de requests, webhooks e eventos do Billing.
 - [ ] Documentar variáveis de ambiente e execução local.
 - [ ] Documentar decisões arquiteturais e estratégia Saga no README.
 
@@ -330,7 +330,7 @@ somente a documentação.
 - [ ] Testar MongoDB e RabbitMQ com integração real isolada, preferencialmente
       via Testcontainers.
 - [ ] Testar contratos HTTP e de eventos.
-- [ ] Testar adapter Mercado Pago sem chamar produção.
+- [x] Testar adapter Mercado Pago sem chamar produção.
 - [ ] Participar de pelo menos um fluxo BDD completo entre microsserviços.
 - [ ] Incluir ao menos um BDD de falha/compensação para a demonstração.
 - [ ] Configurar JaCoCo com gate mínimo de 80% por serviço.

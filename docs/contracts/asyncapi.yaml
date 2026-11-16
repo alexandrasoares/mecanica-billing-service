@@ -1,9 +1,9 @@
 asyncapi: 3.1.0
 info:
   title: Mecanica Billing Service Events
-  version: 1.0.0
+  version: 1.1.0
   description: |
-    Contratos assíncronos do trecho de orçamento da Saga.
+    Contratos assíncronos dos trechos de orçamento e pagamento da Saga.
     O arquivo descreve somente eventos consumidos ou publicados pelo Billing.
 defaultContentType: application/json
 
@@ -66,6 +66,30 @@ channels:
       quoteFailed:
         $ref: '#/components/messages/QuoteFailed'
     x-rabbitmq-exchange: mecanica.events
+  paymentPending:
+    address: billing.payment.pending.v1
+    messages:
+      paymentPending:
+        $ref: '#/components/messages/PaymentPending'
+    x-rabbitmq-exchange: mecanica.events
+  paymentApproved:
+    address: billing.payment.approved.v1
+    messages:
+      paymentApproved:
+        $ref: '#/components/messages/PaymentApproved'
+    x-rabbitmq-exchange: mecanica.events
+  paymentRejected:
+    address: billing.payment.rejected.v1
+    messages:
+      paymentRejected:
+        $ref: '#/components/messages/PaymentRejected'
+    x-rabbitmq-exchange: mecanica.events
+  paymentFailed:
+    address: billing.payment.failed.v1
+    messages:
+      paymentFailed:
+        $ref: '#/components/messages/PaymentFailed'
+    x-rabbitmq-exchange: mecanica.events
 
 operations:
   consumeQuoteRequested:
@@ -118,6 +142,30 @@ operations:
       $ref: '#/channels/quoteFailed'
     messages:
       - $ref: '#/channels/quoteFailed/messages/quoteFailed'
+  publishPaymentPending:
+    action: send
+    channel:
+      $ref: '#/channels/paymentPending'
+    messages:
+      - $ref: '#/channels/paymentPending/messages/paymentPending'
+  publishPaymentApproved:
+    action: send
+    channel:
+      $ref: '#/channels/paymentApproved'
+    messages:
+      - $ref: '#/channels/paymentApproved/messages/paymentApproved'
+  publishPaymentRejected:
+    action: send
+    channel:
+      $ref: '#/channels/paymentRejected'
+    messages:
+      - $ref: '#/channels/paymentRejected/messages/paymentRejected'
+  publishPaymentFailed:
+    action: send
+    channel:
+      $ref: '#/channels/paymentFailed'
+    messages:
+      - $ref: '#/channels/paymentFailed/messages/paymentFailed'
 
 components:
   messages:
@@ -161,6 +209,26 @@ components:
       title: Quote processing failed
       payload:
         $ref: '#/components/schemas/QuoteFailedEvent'
+    PaymentPending:
+      name: billing.payment.pending.v1
+      title: Payment checkout pending
+      payload:
+        $ref: '#/components/schemas/PaymentPendingEvent'
+    PaymentApproved:
+      name: billing.payment.approved.v1
+      title: Payment approved
+      payload:
+        $ref: '#/components/schemas/PaymentApprovedEvent'
+    PaymentRejected:
+      name: billing.payment.rejected.v1
+      title: Payment rejected or cancelled
+      payload:
+        $ref: '#/components/schemas/PaymentRejectedEvent'
+    PaymentFailed:
+      name: billing.payment.failed.v1
+      title: Payment processing failed
+      payload:
+        $ref: '#/components/schemas/PaymentFailedEvent'
 
   schemas:
     EventMetadata:
@@ -495,6 +563,138 @@ components:
         failedAt:
           type: string
           format: date-time
+
+    PaymentStatusPayload:
+      type: object
+      required:
+        - paymentId
+        - quoteId
+        - amount
+        - currency
+        - status
+        - changedAt
+      properties:
+        paymentId:
+          type: string
+          minLength: 1
+        quoteId:
+          type: string
+          minLength: 1
+        amount:
+          type: number
+          exclusiveMinimum: 0
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        status:
+          type: string
+          enum:
+            - PENDING
+            - IN_PROCESS
+            - APPROVED
+            - REJECTED
+            - CANCELLED
+        externalPaymentId:
+          type:
+            - string
+            - 'null'
+        providerStatus:
+          type:
+            - string
+            - 'null'
+        changedAt:
+          type: string
+          format: date-time
+
+    PaymentPendingEvent:
+      allOf:
+        - $ref: '#/components/schemas/EventMetadata'
+        - $ref: '#/components/schemas/BillingEventSource'
+        - type: object
+          required:
+            - payload
+          properties:
+            eventType:
+              const: billing.payment.pending.v1
+            payload:
+              allOf:
+                - $ref: '#/components/schemas/PaymentStatusPayload'
+                - type: object
+                  properties:
+                    status:
+                      const: PENDING
+
+    PaymentApprovedEvent:
+      allOf:
+        - $ref: '#/components/schemas/EventMetadata'
+        - $ref: '#/components/schemas/BillingEventSource'
+        - type: object
+          required:
+            - payload
+          properties:
+            eventType:
+              const: billing.payment.approved.v1
+            payload:
+              allOf:
+                - $ref: '#/components/schemas/PaymentStatusPayload'
+                - type: object
+                  properties:
+                    status:
+                      const: APPROVED
+
+    PaymentRejectedEvent:
+      allOf:
+        - $ref: '#/components/schemas/EventMetadata'
+        - $ref: '#/components/schemas/BillingEventSource'
+        - type: object
+          required:
+            - payload
+          properties:
+            eventType:
+              const: billing.payment.rejected.v1
+            payload:
+              allOf:
+                - $ref: '#/components/schemas/PaymentStatusPayload'
+                - type: object
+                  properties:
+                    status:
+                      enum:
+                        - REJECTED
+                        - CANCELLED
+
+    PaymentFailedEvent:
+      allOf:
+        - $ref: '#/components/schemas/EventMetadata'
+        - $ref: '#/components/schemas/BillingEventSource'
+        - type: object
+          required:
+            - payload
+          properties:
+            eventType:
+              const: billing.payment.failed.v1
+            payload:
+              type: object
+              required:
+                - paymentId
+                - quoteId
+                - status
+                - code
+                - message
+                - failedAt
+              properties:
+                paymentId:
+                  type: string
+                quoteId:
+                  type: string
+                status:
+                  const: ERROR
+                code:
+                  type: string
+                message:
+                  type: string
+                failedAt:
+                  type: string
+                  format: date-time
 
     BillingEventSource:
       type: object

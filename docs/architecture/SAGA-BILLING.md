@@ -40,6 +40,34 @@ Inbox e Outbox são persistidos no mesmo banco MongoDB do Billing. As mudanças
 de domínio, o registro da Inbox e a gravação da Outbox participam da mesma
 transação local; por isso o MongoDB é executado como replica set.
 
+### Pagamento após aprovação
+
+O Billing cria a cobrança após a aprovação do orçamento e antes da execução:
+
+```mermaid
+sequenceDiagram
+    participant Client as Cliente
+    participant Billing as Billing Service
+    participant MP as Mercado Pago
+    participant MQ as RabbitMQ
+    participant OS as OS Service
+
+    Client->>Billing: POST /payments (quoteId)
+    Billing->>Billing: valida orçamento APPROVED e idempotência
+    Billing->>MP: POST /checkout/preferences
+    MP-->>Billing: preferenceId e sandbox_init_point
+    Billing->>MQ: billing.payment.pending.v1
+    MP->>Billing: webhook assinado
+    Billing->>MP: GET /v1/payments/{id}
+    Billing->>Billing: valida referência, valor, moeda e transição
+    Billing->>MQ: billing.payment.approved.v1
+    MQ->>OS: pagamento confirmado
+```
+
+O redirect do navegador nunca confirma o pagamento. Apenas um webhook com
+assinatura válida, seguido de consulta autenticada ao provedor, altera o estado
+financeiro.
+
 ## Contratos
 
 A fonte oficial dos contratos é:
@@ -78,6 +106,10 @@ A fonte oficial dos contratos é:
 | `billing.quote.rejected.v1` | orçamento rejeitado |
 | `billing.quote.cancelled.v1` | orçamento cancelado por cancelamento da OS |
 | `billing.quote.failed.v1` | solicitação não processada definitivamente |
+| `billing.payment.pending.v1` | preferência de checkout criada |
+| `billing.payment.approved.v1` | pagamento confirmado pelo provedor |
+| `billing.payment.rejected.v1` | pagamento rejeitado ou cancelado |
+| `billing.payment.failed.v1` | falha de integração ou estado desconhecido |
 
 ## Topologia RabbitMQ acordada pelo Billing
 
@@ -132,11 +164,11 @@ compensações explícitas; registros financeiros não devem ser apagados.
 
 ## Decisões ainda externas ao Billing
 
-- momento da cobrança no fluxo global;
 - estados internos da OS após cada evento;
 - serviço que fornece peças, mão de obra e preços;
 - política global após rejeição ou expiração;
+- política de estorno após pagamento aprovado;
 - cenário BDD final do grupo.
 
-Essas decisões não impedem a implementação da mensageria de orçamento, mas
-impedem fechar os contratos de pagamento.
+Essas decisões não alteram a responsabilidade local do Billing, mas precisam
+ser fechadas para a demonstração ponta a ponta do grupo.

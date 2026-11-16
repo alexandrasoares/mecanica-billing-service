@@ -36,6 +36,20 @@ billing:
       poll-interval-ms: ${OUTBOX_POLL_INTERVAL_MS:1000}
       max-attempts: ${OUTBOX_MAX_ATTEMPTS:10}
       confirm-timeout-seconds: ${OUTBOX_CONFIRM_TIMEOUT_SECONDS:5}
+  mercado-pago:
+    base-url: ${MERCADO_PAGO_BASE_URL:https://api.mercadopago.com}
+    sandbox: ${MERCADO_PAGO_SANDBOX:true}
+    access-token: ${MERCADO_PAGO_ACCESS_TOKEN:}
+    webhook-secret: ${MERCADO_PAGO_WEBHOOK_SECRET:}
+    webhook-tolerance-seconds: ${MERCADO_PAGO_WEBHOOK_TOLERANCE_SECONDS:300}
+    notification-url: ${MERCADO_PAGO_NOTIFICATION_URL:}
+    back-urls:
+      success: ${MERCADO_PAGO_SUCCESS_URL:}
+      failure: ${MERCADO_PAGO_FAILURE_URL:}
+      pending: ${MERCADO_PAGO_PENDING_URL:}
+    reconciliation-age: ${MERCADO_PAGO_RECONCILIATION_AGE:PT5M}
+    reconciliation-interval-ms: ${MERCADO_PAGO_RECONCILIATION_INTERVAL_MS:60000}
+    reconciliation-enabled: ${MERCADO_PAGO_RECONCILIATION_ENABLED:false}
 
 server:
   port: ${SERVER_PORT:8080}

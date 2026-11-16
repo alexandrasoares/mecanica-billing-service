@@ -10,6 +10,10 @@ public final class EventTypes {
     public static final String QUOTE_REJECTED = "billing.quote.rejected.v1";
     public static final String QUOTE_CANCELLED = "billing.quote.cancelled.v1";
     public static final String QUOTE_FAILED = "billing.quote.failed.v1";
+    public static final String PAYMENT_PENDING = "billing.payment.pending.v1";
+    public static final String PAYMENT_APPROVED = "billing.payment.approved.v1";
+    public static final String PAYMENT_REJECTED = "billing.payment.rejected.v1";
+    public static final String PAYMENT_FAILED = "billing.payment.failed.v1";
 
     private EventTypes() {
     }

@@ -35,7 +35,7 @@ Legenda:
 - [x] Mapear riscos, dependências e critérios de aceite.
 - [ ] Confirmar MongoDB no Billing e banco SQL em outro serviço.
 - [x] Adotar Saga coreografada no escopo do Billing.
-- [ ] Definir em qual momento do fluxo ocorre o pagamento.
+- [x] Definir o pagamento após a aprovação do orçamento e antes da execução.
 - [ ] Definir estados oficiais da OS e eventos entre serviços.
 - [ ] Definir a origem dos itens e preços do orçamento.
 - [x] Publicar contrato AsyncAPI e exemplos JSON para revisão do grupo.
@@ -104,16 +104,16 @@ são perdidos quando o broker fica indisponível.
 
 **Entrega:** cobrança sandbox segura e confirmação assíncrona.
 
-- [ ] Modelar pagamento e sua máquina de estados.
-- [ ] Impedir pagamento para orçamento não aprovado.
-- [ ] Criar adapter da API do Mercado Pago.
-- [ ] Criar cobrança/preferência com chave de idempotência.
-- [ ] Persistir referência externa e dados seguros de checkout.
-- [ ] Implementar webhook e validar sua assinatura.
-- [ ] Consultar o pagamento no provedor antes de confirmar.
-- [ ] Tratar notificações duplicadas e fora de ordem.
-- [ ] Publicar eventos de pagamento pendente, aprovado, rejeitado e falho.
-- [ ] Implementar reconciliação de pagamentos pendentes.
+- [x] Modelar pagamento e sua máquina de estados.
+- [x] Impedir pagamento para orçamento não aprovado.
+- [x] Criar adapter da API do Mercado Pago.
+- [x] Criar cobrança/preferência com chave de idempotência.
+- [x] Persistir referência externa e dados seguros de checkout.
+- [x] Implementar webhook e validar sua assinatura.
+- [x] Consultar o pagamento no provedor antes de confirmar.
+- [x] Tratar notificações duplicadas e fora de ordem.
+- [x] Publicar eventos de pagamento pendente, aprovado, rejeitado e falho.
+- [x] Implementar reconciliação de pagamentos pendentes.
 - [ ] Implementar estorno apenas se aprovado como compensação.
 - [ ] Validar o fluxo no sandbox.
 
@@ -126,11 +126,11 @@ verificada no Mercado Pago avança a OS.
 
 - [x] Configurar JaCoCo com gate mínimo de 80%.
 - [x] Criar testes unitários iniciais de domínio, aplicação e API.
-- [x] Manter cobertura acima de 80% (92,06% de linhas).
+- [x] Manter cobertura acima de 80% (85,95% de linhas).
 - [x] Testar Inbox, Outbox, publisher confirms, retry e listeners.
 - [ ] Adicionar testes de integração com MongoDB e RabbitMQ.
 - [ ] Testar contratos HTTP e de eventos.
-- [ ] Testar o adapter Mercado Pago sem produção.
+- [x] Testar o adapter Mercado Pago sem produção.
 - [ ] Implementar cenário BDD ponta a ponta com os demais serviços.
 - [ ] Implementar cenário BDD de falha/compensação.
 - [ ] Configurar SonarQube ou SonarCloud.
