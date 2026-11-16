@@ -389,14 +389,20 @@ imagem rastreável e deploy verificável.
 
 ### Marco 10 - Evidências e entrega
 
-- [ ] Atualizar README com arquitetura, diagramas e decisões.
-- [ ] Incluir link do repositório, Swagger/Postman e instruções de execução.
-- [ ] Registrar evidência de cobertura >= 80% e quality gate.
-- [ ] Registrar evidência do pipeline e deploy.
-- [ ] Registrar evidência do dashboard/tracing.
-- [ ] Preparar dados de sandbox reproduzíveis para a demonstração.
-- [ ] Ensaiar fluxo feliz completo.
-- [ ] Ensaiar falha, retry/DLQ e compensação da Saga.
+- [x] Atualizar README com arquitetura, diagramas e decisões.
+- [x] Incluir link do repositório, Swagger/Postman e instruções de execução.
+- [ ] Registrar evidência de cobertura >= 80% e quality gate
+      (JaCoCo >=80% evidenciado; quality gate Sonar pendente).
+- [ ] Registrar evidência do pipeline e deploy
+      (pipeline validado no GitHub Actions; deploy Kubernetes não executado).
+- [ ] Registrar evidência do dashboard/tracing
+      (tracing/dashboard/alertas pendentes; apenas correlationId e métricas).
+- [ ] Preparar dados de sandbox reproduzíveis para a demonstração
+      (depende das credenciais sandbox da equipe).
+- [ ] Ensaiar fluxo feliz completo
+      (depende do ambiente e dos serviços do grupo).
+- [ ] Ensaiar falha, retry/DLQ e compensação da Saga
+      (depende do ambiente e dos serviços do grupo).
 - [ ] Entregar ao grupo diagramas, estratégia Saga e justificativas para o PDF.
 - [ ] Reservar no roteiro do vídeo a parte do Billing e manter o total em até
       15 minutos.

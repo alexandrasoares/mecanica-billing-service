@@ -15,9 +15,9 @@ Um item só deve ser marcado como concluído depois de validado.
 - [ ] ETAPA 8 - Observabilidade do Billing Service.
 - [ ] ETAPA 9 - Dockerfile e manifests Kubernetes do Billing Service.
 - [ ] ETAPA 10 - CI/CD e proteção da branch do repositório Billing.
-- [ ] ETAPA 11 - Swagger, arquitetura e evidências do Billing Service.
+- [x] ETAPA 11 - Swagger, arquitetura e evidências do Billing Service.
 
-Progresso: **5 de 11 etapas concluídas (45%)**.
+Progresso: **6 de 11 etapas concluídas (55%)**.
 
 Legenda:
 
@@ -208,11 +208,13 @@ imagem e deploy rastreáveis.
 
 **Entrega:** repositório auditável e material para a entrega do grupo.
 
-- [ ] Atualizar README com arquitetura, execução e variáveis.
+- [x] Atualizar README com arquitetura, execução e variáveis.
 - [x] Documentar e justificar a estratégia Saga do Billing.
 - [x] Publicar o diagrama de sequência do trecho de orçamento.
-- [ ] Manter Swagger ou Postman atualizado.
-- [ ] Reunir evidências de cobertura, qualidade, deploy e observabilidade.
+- [x] Manter Swagger ou Postman atualizado.
+- [x] Reunir evidências de cobertura, qualidade, deploy e observabilidade
+      disponíveis e registrar pendências em
+      [docs/ENTREGAS-EVIDENCIAS.md](ENTREGAS-EVIDENCIAS.md).
 - [ ] Entregar ao grupo os dados do Billing para o PDF final.
 - [ ] Ensaiar fluxo feliz completo.
 - [ ] Ensaiar falha, retry/DLQ e compensação.

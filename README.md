@@ -1,7 +1,27 @@
 # Mecanica Billing Service
 
+Repositório: <https://github.com/alexandrasoares/mecanica-billing-service>
+
 Microsserviço responsável por orçamentos e pagamentos das ordens de serviço da
 oficina mecânica.
+
+## Arquitetura
+
+O Billing é o dono do domínio de orçamento e pagamento: cada OS possui no
+máximo um orçamento, com itens calculados no próprio serviço, estados
+versionados e persistência em MongoDB próprio (replica set). A comunicação
+com os demais serviços é assíncrona via RabbitMQ (topic exchange `mecanica.events`
+com DLX), usando padrões Inbox/Outbox para idempotência e publicação confiável.
+O pagamento externo usa a API do Mercado Pago: um link de checkout é gerado
+somente após a aprovação do orçamento e o webhook assinado confirma o resultado.
+
+A integração ocorre por Saga coreografada baseada em eventos; o Billing não
+acessa bancos de outros serviços e nunca atualiza o status da OS diretamente.
+
+- [Decisão arquitetural da Saga](docs/architecture/ADR-001-saga-coreografada.md)
+- [Fluxo, topologia e compensações](docs/architecture/SAGA-BILLING.md)
+- [Contrato AsyncAPI](docs/contracts/asyncapi.yaml)
+- [Integração Mercado Pago](docs/integrations/MERCADO-PAGO.md)
 
 ## Estado atual
 
@@ -161,12 +181,14 @@ Credenciais reais não devem ser versionadas.
 
 ## Qualidade
 
-O comando `./mvnw verify` executa os testes e reprova o build se a cobertura de
-linhas ficar abaixo de 80%. No primeiro incremento:
+O comando `./mvnw verify` executa 68 testes (incluindo integração com
+Testcontainers — MongoDB + RabbitMQ — e um cenário BDD em Cucumber) e
+reprova o build se a cobertura de linhas ficar abaixo de 80%. No último
+incremento validado:
 
-- 68 testes, incluindo integração com Testcontainers (MongoDB + RabbitMQ) e
-  um cenário BDD em Cucumber;
-- 89,62% de cobertura de linhas.
+- 68 testes, sem falhas, erros ou skips;
+- aproximadamente 89,6% de cobertura de linhas;
+- relatório JaCoCo local em `target/site/jacoco/index.html`;
 
 ## Observabilidade
 
@@ -199,6 +221,14 @@ execução do serviço.
 - [Entregáveis por etapa](docs/ENTREGAVEIS.md)
 - [CI/CD e governança do pipeline](docs/CI-CD.md)
 - [Análise completa e checklist da Fase 4](docs/FASE4-CHECKLIST.md)
+- [Evidências das entregas](docs/ENTREGAS-EVIDENCIAS.md)
 
-A próxima ação é executar o teste controlado no sandbox com as credenciais da
-equipe; depois disso começa a etapa de qualidade e BDD.
+Pendências reais para as próximas etapas:
+
+- executar o teste controlado no sandbox do Mercado Pago com as credenciais da
+  equipe;
+- implementar o BDD cross-service e o cenário de falha/compensação com os
+  demais serviços;
+- configurar e publicar o quality gate do Sonar, scans de dependências,
+  secrets e imagem, e executar publicação/deploy do Kubernetes;
+- integrar métricas, traces e dashboard/alertas às ferramentas da Fase 3.
